@@ -1,0 +1,13 @@
+{
+  "title": "Learn to Build Modern Web Apps with MEAN",
+  "description": "This tutorial will teach you to use the MEAN stack (MongoDB, Express, AngularJS, and Node) to build a reddit clone",
+  "url": "mean-stack-tutorial",
+  "version": "v1.1",
+  "twitter": "IAmMattGreen",
+  "coverImage": "images/mean.jpg",
+  "github": "https://github.com/emgeee/mean-tutorial",
+
+  "author": {
+    "github": "emgeee"
+  }
+}

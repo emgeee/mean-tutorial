@@ -1,0 +1,1803 @@
+
+[thinkster twitter]: http://twitter.com/AngularTutorial
+[thinkster email]: mailto:hello@thinkster.io
+[REST]: http://en.wikipedia.org/wiki/Representational_state_transfer
+[CRUD]: http://en.wikipedia.org/wiki/Create,_read,_update_and_delete
+[install-node]: https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+[install-mongo]: http://docs.mongodb.org/manual/installation/
+[ng-repeat]: https://docs.angularjs.org/api/ng/directive/ngRepeat
+[ng-click]: https://docs.angularjs.org/api/ng/directive/ngClick
+[ng-submit]: https://docs.angularjs.org/api/ng/directive/ngSubmit
+[ng-model]: https://docs.angularjs.org/api/ng/directive/ngModel
+[ng-hide]: https://docs.angularjs.org/api/ng/directive/ngHide
+[ng-show]: https://docs.angularjs.org/api/ng/directive/ngShow
+[Angular expression]: https://docs.angularjs.org/guide/expression
+[ng-route]: https://docs.angularjs.org/api/ngRoute
+[ng http]: https://docs.angularjs.org/api/ng/service/$http
+[ng copy]: https://docs.angularjs.org/api/ng/function/angular.copy
+[services]: https://docs.angularjs.org/guide/services
+[data bindings]: https://docs.angularjs.org/guide/databinding
+[built in filters]: https://docs.angularjs.org/api/ng/filter
+[object reference]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects
+[angular style guide]: https://github.com/mgechev/angularjs-style-guide
+[factory vs service]: http://tylermcginnis.com/angularjs-factory-vs-service-vs-provider/
+[ui otherwise]: https://github.com/angular-ui/ui-router/wiki/URL-Routing#otherwise-for-invalid-routes
+[ui view]: https://github.com/angular-ui/ui-router/wiki/Quick-Reference#ui-view
+[ui parameters]: https://github.com/angular-ui/ui-router/wiki/URL-Routing#url-parameters
+[ui stateParams]: https://github.com/angular-ui/ui-router/wiki/URL-Routing#stateparams-service
+[ui resolve]: https://github.com/angular-ui/ui-router/wiki#resolve
+[mongoose populate]: http://mongoosejs.com/docs/populate.html
+[mongoose objectid]: http://mongoosejs.com/docs/api.html#schema-objectid-js
+[mongoose query]: http://mongoosejs.com/docs/queries.html
+[mongo objectid]: http://api.mongodb.org/java/current/org/bson/types/ObjectId.html
+[express get]: http://expressjs.com/api#app.get
+[express json]: http://expressjs.com/api#res.json
+[express param]: http://expressjs.com/4x/api.html#app.param
+[express generator]: https://github.com/expressjs/generator
+
+[better way]: https://www.thinkster.io/angulartutorial/a-better-way-to-learn-angularjs/
+[scopes]: https://www.thinkster.io/angulartutorial/a-better-way-to-learn-angularjs/#part-5-scope
+[filters]: https://www.thinkster.io/angulartutorial/a-better-way-to-learn-angularjs/#part-3-filters
+[config]: https://www.thinkster.io/egghead/the-config-function
+[inline template]: https://www.thinkster.io/egghead/templateurl
+[promises]: https://www.thinkster.io/egghead/promises
+[modern web apps firebase]: https://www.thinkster.io/angulartutorial/
+
+# Introduction
+
+{intro-video: mean-intro}
+
+The goal of this tutorial is to guide you through the creation of a
+Reddit/Hacker News clone using the MEAN stack. By completing this tutorial, you
+will gain a basic understanding of the MEAN stack including building a REST
+interface with Express.js on top of Node.js and using that interface to perform
+CRUD operations on a database via an AngularJS frontend.
+
+
+## Why MEAN Stack?
+
+The acronym "MEAN" stands for "[MongoDB](http://www.mongodb.org/)
+[Express.js](http://expressjs.com/) [AngularJS](https://angularjs.org/)
+[Node.js](http://nodejs.org/)" and represents a group of technologies which are
+known to synergize well together. The major benefit of the MEAN stack is that
+it's extremely quick to prototype with. Node.js allows you to use Javascript on
+the backend as well as the frontend which can save you from having to learn a
+separate language. In addition, the
+[NoSQL](http://www.mongodb.com/nosql-explained) nature of MongoDB allows you to
+quickly change and alter the data layer without having to worry about
+migrations, which is a very valuable attribute when you're trying to build a
+product without clear specifications. Finally, these technologies have a lot
+of community support behind them so finding answers to questions or hiring help
+is going to be much easier using these technologies.
+
+
+## Prerequisites
+
+This course assumes knowledge of programming and at least basic knowledge of
+JavaScript. In addition, you should be comfortable with basic web application
+concepts including [REST][] and [CRUD][]. Before you begin, you will also need
+to have Node.js and MongoDB already installed. Because you will need to install
+various packages for Node.js, you should follow [these installation
+instructions][install-node] which use [npm](https://www.npmjs.org/).
+Installation instructions for MongoDB can be found [on the Mongo
+website][install-mongo]. This tutorial will be based on AngularJS v1.3.10,
+Node.js v0.10.31 and MongoDB 2.6.7.
+
+
+{x: install node}
+Install Node.js
+
+{x: install mongo}
+Install MongoDB
+
+
+## Recommendations for Completing this Tutorial
+
+Throughout the course of this tutorial, links to additional concepts and
+information will be included. You can use these links as supplementary material
+which can help you gain insight into the stack and its various components. As
+always, if you have any questions Google and
+[Stackoverflow](http://stackoverflow.com/) are your best bet. If you're unsure
+about something specific to this tutorial, feel free to ping me on twitter
+at [@IAmMattGreen](https://twitter.com/IAmMattGreen)!
+
+We at Thinkster are firm believers in actually writing code. Therefor we
+**strongly** encourage you to type out all the code instead of copy+pasting it.
+
+
+## Project Specifications
+
+Before beginning work on any project, it's usually a good idea to know what you're
+building. Below is a basic list of things we want our users to be able to do:
+
+* Create new posts
+* View all posts ordered by upvotes
+* Add comments about a given post
+* View comments for a given post
+* Upvote posts and comments
+
+
+In addition to technologies that make up MEAN, we're going to enlist the help
+of several other libraries to help us achieve our goals:
+
+* [Mongoose.js](http://mongoosejs.com/) for adding structure to MongoDB
+* [Angular ui-router](https://github.com/angular-ui/ui-router) for client-side routing
+* [Twitter Bootstrap](http://getbootstrap.com/) for some quick styling
+
+
+
+# Jumping in with Angular
+
+{video: ch-1}
+
+To begin this tutorial, we're going to start with the Angular side of things.
+AngularJS is a frontend framework developed by Google with the goal of making
+single page web applications easier to build, test, and maintain. Throughout
+this tutorials, we'll be linking to our [A Better Way to Learn Angular][better
+way] guide which can provide supplementary information.
+
+Without further ado, let's jump in...
+
+
+## Getting Started
+
+As mentioned before, this tutorial will take you through building out a Hacker
+News/Reddit clone, which we're going to name "Flapper News". To keep things
+simple, we're going to kick things off with two files.
+
+
+{x: create basic angular app}
+Create two empty files called `index.html` (for writing the template) and `app.js` (for defining our AngularJS logic)
+
+To begin, our `index.html` will look like this:
+
+```html
+<html>
+  <head>
+    <title>My Angular App!</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+    <script src="app.js"></script>
+  </head>
+  <body ng-app="flapperNews" ng-controller="MainCtrl">
+    <div>
+      {{test}}
+    </div>
+  </body>
+</html>
+```
+
+Our `app.js` is going to look like this:
+
+```javascript
+var app = angular.module('flapperNews', []);
+
+app.controller('MainCtrl', [
+'$scope',
+function($scope){
+  $scope.test = 'Hello world!';
+}]);
+```
+
+With these several lines of code, we've set up a new AngularJS app and created
+a new controller. You'll notice that we declare a variable `test` in the controller and display its contents
+using the AngularJS `{{}}` notation. This is demonstrating one of the most powerful features of
+AngularJS, which is its two-way data-bindings.
+
+
+
+{x: understand data bindings}
+If you aren't familiar with data-binding in AngularJS, read the AngularJS Guide on [ two-way data-binding ][data bindings]
+
+
+## Displaying Lists
+
+One thing that's is going to be absolutely fundamental to our app is displaying
+lists. Fortunately, angular makes this really easy using the
+[ng-repeat][] directive.
+
+
+{x: add scope posts array}
+To begin, we're going to modify our
+controller to include a new `$scope` variable that defines a list of post
+titles. Add the following code inside the controller function in `app.js`:
+
+```javascript
+$scope.posts = [
+  'post 1',
+  'post 2',
+  'post 3',
+  'post 4',
+  'post 5'
+];
+```
+
+{info}
+The `$scope` variable serves as the bridge between Angular controllers and
+Angular templates. If you want something to be accessible in the template such
+as a function or variable, bind it to `$scope`
+
+
+{x: using ng-repeat}
+Now that we have a list of data we want to repeat, let's use `ng-repeat` to do it. Add the following code to line 8 of index.html,
+replacing the div that was there before:
+
+```html
+<div ng-repeat="post in posts">
+  {{post}}
+</div>
+```
+
+When you refresh the page you should see a list of posts!
+
+Now what if we want to display additional information about our posts?
+`ng-repeat` lets us do that too!
+
+
+{x: amend posts objects}
+Let's amend our `posts` object to include some
+additional information we might be interested in displaying like the number of
+upvotes:
+
+```javascript
+$scope.posts = [
+  {title: 'post 1', upvotes: 5},
+  {title: 'post 2', upvotes: 2},
+  {title: 'post 3', upvotes: 15},
+  {title: 'post 4', upvotes: 9},
+  {title: 'post 5', upvotes: 4}
+];
+```
+
+
+{x: display posts objects}
+Now we change our `ng-repeat` directive to display the new information:
+
+```html
+<div ng-repeat="post in posts">
+  {{post.title}} - upvotes: {{post.upvotes}}
+</div>
+```
+
+Of course it is important to order posts by number of upvotes, and we can tap
+into an [angular filter][filters] to make it happen.
+
+
+{x: filter data}
+Add a filter to our posts based on the number of upvotes in descending order:
+
+```html
+<div ng-repeat="post in posts | orderBy: '-upvotes'">
+  {{post.title}} - upvotes: {{post.upvotes}}
+</div>
+```
+
+AngularJS comes with several [built in filters][built in filters] but you can
+also write custom filters tailored to your specific needs.
+
+
+# Getting User Input
+
+{video: ch-2}
+
+Now that we've learned how to display lists of information with Angular,
+it'd really be great if we could have the user add posts. To do this,
+we first need to add a function to our `$scope` variable.
+
+
+{x: create addpost function}
+Create a $scope function that will add an object into the posts array:
+
+```javascript
+$scope.addPost = function(){
+  $scope.posts.push({title: 'A new post!', upvotes: 0});
+};
+```
+
+When this function is invoked, it will append a new post to our `$scope.posts`
+variable. Now we're going to have to allow the user to actually execute this
+function.
+
+
+{x: create addpost button}
+Create a button that executes our addPost $scope function using the [ng-click][ng-click] directive:
+
+```html
+<button ng-click="addPost()">Post</button>
+```
+
+Great, we can now click a button and have a new post show up! Let's extend this
+by allowing the user to actually specify what they want the title to be. First,
+we need to build out the form in HTML and sprinkle it with some Angular Magic.
+
+{x: form with ng-submit}
+Create a form below the ng-repeat div that will allow us to enter custom posts:
+
+```html
+<form ng-submit="addPost()">
+  <input type="text" ng-model="title"></input>
+  <button type="submit">Post</button>
+</form>
+```
+
+Here we've created a form that encompasses our title text-box and 'Post' button.
+We are also now calling our `addPost()` function using the
+[ng-submit][ng-submit] directive, which has the added benefit of the user being
+able to press the 'enter' key to submit the form. Finally, we're using the
+[ng-model][ng-model] directive to bind the contents of the text box to
+`$scope`. This will allow our controller to access the contents of the text box
+using `$scope.title`.
+
+To accompany the changes to our template, we need to make some tweaks to
+`addPost()`.
+
+
+{x: tweak addPost}
+Have the addPost function retrieve the title entered into our form, which is bound to the $scope variable `title`, and set `title` to blank once it has been added to the posts array:
+
+```Javascript
+$scope.addPost = function(){
+  $scope.posts.push({title: $scope.title, upvotes: 0});
+  $scope.title = '';
+};
+```
+
+When we add a post we are now getting the title from `$scope.title`, which we
+then clear after the post has been created. At this point, it makes sense to
+prevent the user from posting a blank title.
+
+
+{x: prevent blank title}
+Prevent a user from submitting a post with a blank title by adding the
+following line to the beginning of `addPost()`:
+
+```javascript
+if(!$scope.title || $scope.title === '') { return; }
+```
+
+## Enable Upvoting
+
+Now that we can add some new posts, why don't we allow a user to upvote
+existing ones?  To get started, lets revisit our `ng-repeat` directive.
+
+
+{x: add upvote span}
+Next to each post, we need to place a click-able element that will increment the
+corresponding post's upvote counter:
+
+```html
+<div ng-repeat="post in posts | orderBy:'-upvotes'">
+  <span ng-click="incrementUpvotes(post)">^</span>
+  {{post.title}} - upvotes: {{post.upvotes}}
+</div>
+```
+
+We've now added a `^` character inside a `<span>` tag that when clicked, calls
+the `incrementUpvotes()` function in our controller, but we don't have
+that function in our controller yet!
+
+
+{x: add upvote function}
+Define the `incrementUpvotes()` function in our controller:
+
+```javascript
+$scope.incrementUpvotes = function(post) {
+  post.upvotes += 1;
+};
+```
+
+Notice that for this function we are passing the current instance of `post` to
+the function. This is happening [by reference][object reference] so when we
+increment upvotes, it gets automatically reflected back to the HTML page.
+
+## Submitting Links
+
+Ultimately, Flapper News is about sharing links to content, so lets enable users
+to submit links along with their titles. We'll start by adding a second text box
+to our form that a user can use to submit a link. We'll also add some placeholder
+text to make it clear which form is which:
+
+
+{x: link text field}
+Add a link field to our form that is bound to the scope variable `link`:
+
+```javascript
+<form ng-submit="addPost()">
+  <input type="text" placeholder="Title" ng-model="title"></input>
+  <br>
+  <input type="text" placeholder="Link" ng-model="link"></input>
+  <br>
+  <button type="submit">Post</button>
+</form>
+```
+
+
+{x: extend addPost for links}
+Next we're going to want to modify our `addPost()` function to include the link
+(notice that we aren't going to force the user to submit a link if they don't
+want to):
+
+```javascript
+$scope.addPost = function(){
+  if(!$scope.title || $scope.title === '') { return; }
+  $scope.posts.push({
+    title: $scope.title,
+    link: $scope.link,
+    upvotes: 0
+  });
+  $scope.title = '';
+  $scope.link = '';
+};
+```
+
+Finally we need to modify the `ng-repeat` section to make the title a link
+to the content, but only if a link was specified.
+
+We'll do this by using a new directive called [ng-hide][], which hides elements
+when an [Angular expression][] evaluates to true.
+
+
+{x: hide blank link}
+Use to `ng-hide` to hide the linked version of the
+title if no link exists and correspondingly show the unlinked version:
+
+```html
+<div ng-repeat="post in posts | orderBy:'-upvotes'">
+  <span ng-click="incrementUpvotes(post)">^</span>
+  <a ng-show="post.link" href="{{post.link}}">
+    {{post.title}}
+  </a>
+  <span ng-hide="post.link">
+    {{post.title}}
+  </span>
+  - upvotes: {{post.upvotes}}
+</div>
+```
+
+It is worth noting that [ng-show][] is merely the inverse of `ng-hide`. You can
+use either one for programmatically displaying or hiding elements.
+
+# Adding Some Style
+
+{video: ch-3_4}
+
+At this point, we have the basics of an application - a user can add new posts
+which are automatically ordered based on the number of upvotes. Up until now,
+however, our interface has been lacking in the looks department. We can spruce
+it up a bit using some basic Bootstrap styling.
+
+
+{x: use bootstrap}
+Change your `index.html` file to include Twitter Bootstrap along with a new layout:
+
+```html
+<html>
+<head>
+  <title>Flapper News</title>
+  <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+  <script src="app.js"></script>
+  <style> .glyphicon-thumbs-up { cursor:pointer } </style>
+</head>
+<body ng-app="flapperNews" ng-controller="MainCtrl">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+
+      <div class="page-header">
+        <h1>Flapper News</h1>
+      </div>
+
+      <div ng-repeat="post in posts | orderBy:'-upvotes'">
+        <span class="glyphicon glyphicon-thumbs-up"
+          ng-click="incrementUpvotes(post)"></span>
+        {{post.upvotes}}
+        <span style="font-size:20px; margin-left:10px;">
+          <a ng-show="post.link" href="{{post.link}}">
+            {{post.title}}
+          </a>
+          <span ng-hide="post.link">
+            {{post.title}}
+          </span>
+        </span>
+      </div>
+
+      <form ng-submit="addPost()"
+        style="margin-top:30px;">
+        <h3>Add a new post</h3>
+
+        <div class="form-group">
+          <input type="text"
+            class="form-control"
+            placeholder="Title"
+            ng-model="title"></input>
+        </div>
+        <div class="form-group">
+          <input type="text"
+          class="form-control"
+          placeholder="Link"
+          ng-model="link"></input>
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+      </form>
+
+    </div>
+  </div>
+</body>
+</html>
+```
+
+At the top we've included Bootstrap from a
+[CDN](http://en.wikipedia.org/wiki/Content_delivery_network). In the body tag,
+we've made use of Bootstrap's [grid system](http://getbootstrap.com/css/#grid)
+to align our content in the middle of the screen. We've also stylized the posts
+list and "Add a new post" form to make things a little easier to read. There's
+a lot more that could be done on this front so feel free to mess around with
+more styling before (or after) you continue.
+
+
+{x: add own styles}
+(optional) Add your own styles!
+
+# Angular Services
+
+Up to this point, we've been storing important data directly in the controller.
+While this works, it has some disadvantages:
+
+* when the controller goes out of scope, we lose the data
+* that data cannot be easily accessed from other controllers or directives
+* the data is difficult to mock, which is important when writing automated tests
+
+To rectify this problem, we're going to refactor our `$scope.posts` variable into a
+[service][services].
+
+
+
+## My First Service... Is Really a Factory
+
+In Angular, services are declared much like controllers. Inside `app.js`,
+we're going to attach a new service to our `flapperNews` module.
+
+
+{x: create factory}
+Create a factory for posts in `app.js` (our `MainCtrl` controller should appear below this):
+
+```javascript
+app.factory('posts', [function(){
+  // service body
+}])
+```
+
+{info}
+By [Angular conventions][angular style guide], lowerCamelCase is used for
+factory names that won't be `new`'ed.
+
+You may be wondering why we're using the keyword *factory* instead of
+*service*.  In angular, factory and service are related in that they are both
+instances of a third entity called *provider*.
+
+
+{x: different types of services}
+The difference between them are nuanced but if you'd like to learn more check out [Angular Factory vs Service vs Provider][factory vs service].
+
+{x: move posts to factory}
+Now that we've created our service, lets go ahead and move our posts variable to
+it:
+
+```javascript
+app.factory('posts', [function(){
+  var o = {
+    posts: []
+  };
+  return o;
+}]);
+```
+
+What we're doing here is creating a new object that has an array property
+called `posts`. We then return that variable so that our `o` object essentially
+becomes exposed to any other Angular module that cares to inject it. You'll
+note that we could have simply exported the `posts` array directly, however, by
+exporting an object that contains the `posts` array we can add new objects and
+methods to our services in the future.
+
+
+## Injecting the Service
+
+Our next step is to inject the service into our controller so we can access its
+data.  Simply add the name of the service as a parameter to the controller we
+wish to access it from:
+
+
+{x: inject post service}
+Inject posts service into `MainCtrl`
+
+```javascript
+app.controller('MainCtrl', [
+'$scope',
+'posts',
+function($scope, posts){
+  ...
+
+)};
+```
+
+As you'll recall, two-way data-binding only applies to variables bound to
+`$scope`. To display our array of posts that exist in the posts factory
+(`posts.posts`), we'll need to set a scope variable in our controller to mirror
+the array returned from the service.
+
+
+{x: mirror posts}
+Bind the `$scope.posts` variable in our controller to the posts array in our service:
+
+```javascript
+$scope.posts = posts.posts;
+```
+
+Now any change or modification made to `$scope.posts` will be stored in the
+service and immediately accessible by any other module that injects the `posts`
+service.
+
+# Angular Routing
+
+{video: ch-5}
+
+
+Now that we understand the basics of Angular templates, controllers, and
+services, we're going to start diving into some of the concepts that make
+client side web applications so dynamic and powerful. To do this, we're going
+to need to learn how to deal with multiple views and controllers, which we will
+accomplish using the wonderful
+[ui-router](https://github.com/angular-ui/ui-router/) library.
+
+
+{x: add ui-router}
+To get started, lets include the library after we include Angular in our
+`index.html`:
+
+```html
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
+```
+
+
+{x: include ui-router}
+Because we are adding an external module, we need to be sure to include it as a
+dependency in our app:
+
+```javascript
+angular.module('flapperNews', ['ui.router'])
+```
+
+You may be wondering why we have chosen to use `ui-router` instead of the more
+standard [ngRoute][ng-route] module - `ui-router` is newer and provides more
+flexibility and features than `ngRoute`. We will be using a few of these in
+this tutorial.
+
+
+## Adding a New State
+
+Now that we have `ui-router` included, we need to configure it. In our
+`app.js`, we're going to use the Angular `config()` function to setup a
+*home* state.
+
+
+{x: configure home state}
+Create the config block for our app and configure a home state using [$stateProvider](https://github.com/angular-ui/ui-router/wiki) and [$urlRouterProvider](https://github.com/angular-ui/ui-router/wiki/URL-Routing). Use `otherwise()` to redirect unspecified routes.
+
+```javascript
+app.config([
+'$stateProvider',
+'$urlRouterProvider',
+function($stateProvider, $urlRouterProvider) {
+
+  $stateProvider
+    .state('home', {
+      url: '/home',
+      templateUrl: '/home.html',
+      controller: 'MainCtrl'
+    });
+
+  $urlRouterProvider.otherwise('home');
+}]);
+```
+
+Here we set up our *home* route. You'll notice that the state is given a name
+('home'), URL ('/home'), and template URL ('/home.html'). We've also told
+Angular that our new state should be controlled by `MainCtrl`. Finally, using
+the [otherwise()][ui otherwise] method we've specified what should happen if
+the app receives a URL that is not defined. All that's left to do is define the
+`home.html` template. Instead of creating a new file, we are going to move most
+of our HTML into an [inline template][].
+
+
+{x: add home template}
+Add our inline home template right before the `</body>` tag in `index.html`:
+
+```html
+<script type="text/ng-template" id="/home.html">
+  <div class="page-header">
+    <h1>Flapper News</h1>
+  </div>
+
+  <!-- rest of template -->
+</script>
+```
+
+Using this syntax we can create templates inside our HTML and reference them
+in JavaScript.
+
+Finally, we need to tell `ui-router` where to place the template of the active
+state.
+
+
+{x: insert ui-view}
+Insert the `<ui-view>` tag where template should be rendered:
+
+```html
+<body ng-app="flapperNews">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <ui-view></ui-view>
+    </div>
+  </div>
+
+  ...
+```
+
+Whenever `ui-router` detects a route change, it will place the new state's
+template inside the [<ui-view>][ui view] tag and initialize the controller we specified
+in our state configuration. Notice how we have removed the
+`ng-controller="MainCtrl"` line from the opening `<body>` tag.
+
+# The Posts Page
+
+{video: ch-6}
+
+Now that we've figured out how to create a state with `ui-router`, let's create
+a new one called *posts* that will display comments associated with a post.
+
+
+{x: create posts state}
+In the config block in `app.js`, add a state where an individual post can be accessed:
+
+```javascript
+.state('posts', {
+  url: '/posts/{id}',
+  templateUrl: '/posts.html',
+  controller: 'PostsCtrl'
+});
+```
+
+Notice that we define our URL with brackets around 'id'. This means that 'id'
+is actually a [route parameter][ui parameters] that will be made available to our controller.
+
+As with the *home* state, we're also going to need to define both a new
+template and a new controller. Because we're going to associate comments with
+posts, we want to ensure our `posts` factory is injected into this controller
+so that it may access the comments data.
+
+
+{x: create posts ctrl}
+Create a new controller in `app.js` called PostsCtrl and be sure to inject the `posts` service:
+
+```javascript
+app.controller('PostsCtrl', [
+'$scope',
+'$stateParams',
+'posts',
+function($scope, $stateParams, posts){
+
+}]);
+```
+
+## Faking comment data
+
+Before we go any further, let's take a second to add some fake comment
+data to our `posts` model. This will help us mock up the basic comments
+view as well as ensure our routing is working properly.
+
+
+{x: add fake comments}
+In our addPost function in MainCtrl, add an array of fake comments to the posts object:
+
+```javascript
+$scope.posts.push({
+  title: $scope.title,
+  link: $scope.link,
+  upvotes: 0,
+  comments: [
+    {author: 'Joe', body: 'Cool post!', upvotes: 0},
+    {author: 'Bob', body: 'Great idea but everything is wrong!', upvotes: 0}
+  ]
+});
+```
+
+## Getting the Right Post
+
+Since the *posts* page is about viewing the comments on a particular post, we
+need to use the `id` route parameter to grab the post and associated
+information. For now, we will consider the index of the post to be its id. We
+can use [$stateParams][ui stateParams] to retrieve the id from the URL and load the appropriate
+post.
+
+
+{x: get postid from stateparams}
+In PostsCtrl, set a scope object called `post` that grabs the appropriate post from the `posts` service using the id from $stateParams:
+
+```javascript
+$scope.post = posts.posts[$stateParams.id];
+```
+
+Now that we have the `post` variable in our controller, we can display that
+information in our template.
+
+
+{x: create posts template}
+Create a new inline template called "/posts.html" in `index.html` right before the `</body>` tag:
+
+```html
+<script type="text/ng-template" id="/posts.html">
+  <div class="page-header">
+    <h3>
+      <a ng-show="post.link" href="{{post.link}}">
+        {{post.title}}
+      </a>
+      <span ng-hide="post.link">
+        {{post.title}}
+      </span>
+    </h3>
+  </div>
+
+  <div ng-repeat="comment in post.comments | orderBy:'-upvotes'">
+    <span class="glyphicon glyphicon-thumbs-up"
+      ng-click="incrementUpvotes(comment)"></span>
+    {{comment.upvotes}} - by {{comment.author}}
+    <span style="font-size:20px; margin-left:10px;">
+      {{comment.body}}
+    </span>
+  </div>
+</script>
+```
+
+
+
+Finally, we'll add a link to the post's comment page next to the headline on the
+front page.
+
+
+{x: add cmt link}
+In the "/home.html" inline template, add the code below right after the title `</span>` tag:
+
+```html
+<span>
+  <a href="#/posts/{{$index}}">Comments</a>
+</span>
+```
+
+{info}
+When iterating over an array, the `ng-repeat` directive makes an `$index`
+variable available along with each item in the array.
+
+
+## Creating New Comments
+
+As with the creation of posts, we're going to want to allow our users to post new
+comments. This code looks very similar to what we've already written:
+
+
+{x: create addComment function}
+In our controller `PostsCtrl`, create an `addComment()` function:
+
+```javascript
+$scope.addComment = function(){
+  if($scope.body === '') { return; }
+  $scope.post.comments.push({
+    body: $scope.body,
+    author: 'user',
+    upvotes: 0
+  });
+  $scope.body = '';
+};
+```
+
+{x: create addComment form}
+Add the form below at the end of our inline template "/posts.html":
+
+```html
+<script type="text/ng-template" id="/posts.html">
+
+  <!-- post template -->
+
+  <form ng-submit="addComment()"
+    style="margin-top:30px;">
+    <h3>Add a new comment</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Comment"
+      ng-model="body"></input>
+    </div>
+    <button type="submit" class="btn btn-primary">Post</button>
+  </form>
+</script>
+```
+
+
+## Recap
+
+In this first section, we've introduced you to some of the very basics of
+Angular.js including data-binding, controllers, services, and routing. In the
+process, we've created a skeleton web application that allows a user to create
+a posting that can contain a link or a title, then create comments that are
+associated with those postings.
+
+Up next we're going to learn how to use Node.js to implement a basic REST API
+for saving and retrieving posts and comments. Then we'll come back to the
+frontend and wire everything together into a single cohesive and functional web
+application.
+
+# Beginning Node
+
+{video: ch-7}
+
+Now that we have the basic front-end for our Flapper News coded up with
+Angular, we're going to start work on our backend. Because Angular is able to
+handle the templating and rendering, our backend server will mainly serve as a
+communication layer with our database. Over the next few sections, we are going
+to focus on modeling our data needs and creating a REST API that our Angular
+app can use to interact with this data.
+
+If you haven't already done so, make sure you have `node`, `npm`, and `mongodb`
+installed on your system. As a quick reminder, this tutorial assumes Node
+v0.10.31 and MongoDB 2.6.7.
+
+
+## Creating A New Project
+
+{x: install express-generator}
+We will begin by using [express's generator][express generator]. We can install this using
+the following command:
+
+```bash
+npm install -g express-generator
+```
+
+
+{x: create node project}
+Now we can initiate a new node project with the following command:
+
+```bash
+express --ejs flapper-news
+cd flapper-news
+```
+
+This will create a new folder called *flapper-news* and populate it with
+various files and folders.
+
+{info}
+We are passing the `--ejs` flag because we'd like like our server to use
+standard HTML in its templates as opposed *jade*. Theoretically we are free to
+use Jade if we'd like to but the front-end is already written in plain HTML.
+
+Our first order of business is to add the relevant npm modules we're going to
+need. When starting a new project, a generator will include a list of packages
+that are required by default.
+
+
+{x: npm install}
+Install these packages using the following command:
+
+```bash
+npm install
+```
+
+This will automatically download any packages specified in the `packages.json`
+file and store them in the `node_modules/` directory.
+
+Next, we are going to install Mongoose, which is a library that provides
+schemas and models on top of MongoDB.
+
+
+{x: install mongoose}
+Run this command to install Mongoose via npm:
+
+```bash
+npm install --save mongoose
+```
+
+{info}
+The `--save` flag passed to npm install instructs the program to also save the
+package to the `packages.json` file. This allows you (or your teammates) to
+automatically install missing packages with the `npm install` command.
+
+If you're using any version control software such as
+[git](http://git-scm.com/), now is a good time to make your initial commit.
+
+
+## The Anatomy of Node Project
+
+Right now the root directory of our Node project should look something like this:
+
+```bash
+app.js
+bin/
+node_modules/
+package.json
+public/
+routes/
+views/
+```
+
+Let's go step by step and explain what each folder/file is:
+
+* `app.js` - This file is the launching point for our app. We use it to import
+  all other server files including modules, configure routes, open database
+connections, and just about anything else we can think of.
+
+* `bin/` - This directory is used to contain useful executable scripts. By
+  default it contains one called `www`. A quick peak inside reveals that this
+script actually includes `app.js` and when invoked, starts our Node.js server.
+
+* `node_modules` - This directory is home to all external modules used in the
+  project.  As mentioned earlier, these modules are usually installed using
+`npm install`. You will most likely not have to touch anything here.
+
+* `package.json` - This file defines a JSON object that contains various
+  properties of our project including things such as name and version number.
+It can also defined what versions of Node are required and what modules our
+project depends on. A list of [possible
+options](https://www.npmjs.org/doc/package.json.html) can be found in npm's
+documentation.
+
+* `public/` - As the name alludes to, anything in this folder will be made
+  publicly available by the server. This is where we're going to store
+JavaScript, CSS, images, and templates we want the client to use.
+
+* `routes/` - This directory houses our Node controllers and is usually where
+  most of the backend code will be stored.
+
+* `views/` - As the name says, we will put our views here. Because we specified
+  the `--ejs` flag when initializing our project, views will have the `.ejs`
+extension as opposed to the '.jade' extension Jade views use.  Although views
+are ultimately HTML, they are slightly different than any HTML file we might
+specify in the `public/` directory. Views are capable of being rendered
+directly by Node using the `render()` function and can contain logic that
+allows the server to dynamically change the content. Because we are using
+Angular to create a dynamic experience, we won't be using this feature.
+
+In addition to the above files structure, we are going to add one more folder.
+
+
+{x: create models folder}
+Create a new folder called 'models':
+
+```bash
+mkdir models
+```
+
+This folder will contain our Mongoose schema definitions.
+
+
+## Importing Our Angular Project
+
+The final step before we begin building out the backend is to import our
+Angular portion into our Node.js project. First move the `index.html` file to
+the `views/` directory.  Because we're using the *ejs* engine, Node is looking
+for files with the `.ejs` extension so we're going to have to rename our
+`index.html` to `index.ejs`, replacing the existing one.
+
+Next, move the Angular `app.js` file to the `public/javascripts/` directory. To
+avoid confusion with Node's `app.js`, also rename the Angular file to
+`angularApp.js`.
+
+Finally let's update the `<script>` tag in our `index.ejs` file to reflect
+these changes:
+
+```html
+<script src="/javascripts/angularApp.js"></script>
+```
+
+Now we can start our application by running `npm start`.
+
+If we point our browser to http://localhost:3000 we should be greeted with our
+Angular application.
+
+
+{x: add angular to node}
+Add our existing Angular code to the node project
+
+
+
+# Creating Schemas With Mongoose
+
+{video: ch-8}
+
+
+Our first step in making a persistent data store is to configure our data
+models. To do this, we are going to be adding a schema layer on top of
+MongoDB using a nice library called Mongoose. Before we begin, let's
+make sure our MongoDB server is running.
+
+
+{x: start mongo}
+If Mongo isn't running on your machine, enter this into your terminal:
+
+```bash
+mongod &
+```
+
+Next, we need to tell Node to connect to our local database on start.
+
+
+{x: connect to mongo}
+Connect to our local MongoDB instance by adding the following code into our `app.js` file:
+
+```javascript
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/news');
+```
+
+This will open a connection with the `news` database running on our Mongo
+server. Now we can create our first model.
+
+
+{x: post schema}
+In our `models/` directory create a new file called `Posts.js` and add the following code:
+
+```javascript
+var mongoose = require('mongoose');
+
+var PostSchema = new mongoose.Schema({
+  title: String,
+  link: String,
+  upvotes: {type: Number, default: 0},
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
+});
+
+mongoose.model('Post', PostSchema);
+```
+
+Here we've defined a model called `Post` with several attributes corresponding
+to the type of data we'd like to store. We've declared our `upvotes` field to
+be initialized to 0 and we've set our `comments` field to an array of `Comment`
+references. This will allow us to use Mongoose's build in [populate()][mongoose
+populate] method to easily retrieve all comments associated with a given
+`post`.
+
+Next we register that model with with the global `mongoose` object we imported
+using `require()` so that it can be used to interact with the database anywhere
+else `mongoose` is imported.
+
+
+{x: register post schema}
+In `app.js`, add the following line of code before our `mongoose.connect` call:
+
+```javascript
+var mongoose = require('mongoose');
+require('./models/Posts');
+
+mongoose.connect('mongodb://localhost/news');
+```
+
+
+{x: comment schema}
+While were on the topic of making models, let's create a second model for
+storing comments in `models/Comments.js`:
+
+```javascript
+var mongoose = require('mongoose');
+
+var CommentSchema = new mongoose.Schema({
+  body: String,
+  author: String,
+  upvotes: {type: Number, default: 0},
+  post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }
+});
+
+mongoose.model('Comment', CommentSchema);
+```
+
+In Mongoose, we can create relationships between different data models using
+the [ObjectId][mongoose objectid] type. The `ObjectId` data type refers to a 12
+byte [MongoDB ObjectId][mongo objectid], which is actually what is stored in
+the database. The `ref` property tells Mongoose what type of object the ID
+references and enables us to retrieve both items simultaneously.
+
+
+{x: register comments schema}
+As always when you add a new file, remember to include it in `app.js`. Include this line of code right after the `require` for our Posts schema:
+
+```javascript
+require('./models/Comments');
+```
+
+
+# Opening REST Routes
+
+{video: ch-9}
+
+
+With our backend models in place, it's now time to open some routes that the
+frontend client can interact with. The following are a list of actions a user
+can perform:
+
+* view all posts
+* Add a new post
+* upvote a post
+* view comments associated with a post
+* add a comment
+* upvote a comment
+
+The actions map directly to several routes, which are described as follows:
+
+* GET /posts - return a list of posts and associated metadata
+* POST /posts - create a new post
+* GET /posts/:id - return an individual post with associated comments
+* PUT /posts/:id/upvote - upvote a post, notice we use the post ID in the URL
+* POST /posts/:id/comments - add a new comment to a post by ID
+* PUT /posts/:id/comments/:id/upvote - upvote a comment
+
+
+### Creating Our First Route
+
+To keep things simple we will be defining these routes in the `routes/index.js`
+file. Let's begin by opening up the first route we listed, which should return
+a JSON list containing all `posts`.
+
+
+{x: get posts}
+Start by creating a *GET* route for retrieving posts in `routes/index.js`. It should return a JSON list containing all `posts`:
+
+```javascript
+var mongoose = require('mongoose');
+var Post = mongoose.model('Post');
+var Comment = mongoose.model('Comment');
+
+router.get('/posts', function(req, res, next) {
+  Post.find(function(err, posts){
+    if(err){ return next(err); }
+
+    res.json(posts);
+  });
+});
+```
+
+First, we need to make sure that `mongoose` is imported and that we have
+handles to the `Post` and `Comment` models. Then we use the express
+[get()][express get] method to define the URL for the route (`/posts`) and a
+function to handle the request. Inside our request handler, we query the
+database for all posts. If and error occurred, we pass the error to an error
+handling function otherwise we use [res.json()][express json] to send the
+retrieved posts back to the client.
+
+{info}
+When defining routes with Express.js, two variables will get passed to the
+handler function. `req`, which stands for "request", contains all the
+information about the request that was made to the server including data
+fields. `res`, which stands for "response", is the object used to respond to
+the client.
+
+
+{x: create posts}
+Before we can test that this route works, we need to have some data in our
+database. We can do this by creating a *POST* route for creating posts:
+
+Notice that we're using router.post instead of router.get. This means that we will be making a POST request to the server (not to be confused with our Flapper News 'post' models and routes).
+
+```javascript
+router.post('/posts', function(req, res, next) {
+  var post = new Post(req.body);
+
+  post.save(function(err, post){
+    if(err){ return next(err); }
+
+    res.json(post);
+  });
+});
+```
+
+The structure of the route is similar as above, however, we are using the
+`post()` method. We are also using `mongoose` to create a new `post` object in
+memory before saving it to the database.
+
+
+## Testing the Initial Routes
+
+We can test these two routes using a command line tool called
+[cURL](http://curl.haxx.se/).
+
+
+{x: test create post}
+First, we create a new `post`:
+
+```sh
+curl --data 'title=test&link=http://test.com' http://localhost:3000/posts
+```
+
+
+{x: test get post}
+Next, we query the index route to insure it was saved:
+
+```sh
+curl http://localhost:3000/posts
+```
+
+If everything is functioning properly, you should see a JSON array of size 1
+printed on the console with `title` and `link` set to 'test' and
+'http://test.com' respectively.
+
+
+## Pre-loading Objects
+
+One thing you might notice about the remaining routes we need to implement is
+that they all require us to load a `post` object by ID. Rather than replicating
+the same code across several different request handler functions, we can use
+Express's [param()][express param] function to automatically load an object.
+
+
+{x: preload posts route}
+Create a route for preloading `post` objects in `routes/index.js`:
+
+```javascript
+router.param('post', function(req, res, next, id) {
+  var query = Post.findById(id);
+
+  query.exec(function (err, post){
+    if (err) { return next(err); }
+    if (!post) { return next(new Error('can\'t find post')); }
+
+    req.post = post;
+    return next();
+  });
+});
+```
+
+In this example we are using mongoose's [query interface](mongoose query)
+which simply provides a more flexible way of interacting with the database.
+
+Now when we define a route URL with `:post` in it, this function will be run
+first. Assuming the `:post` parameter contains an ID, our function will
+retrieve the `post` object from the database and attach it to the `req` object
+after which the route handler function will be called.
+
+
+{x: get single post}
+To demonstrate this, let's go ahead and create our route for returning a single post:
+
+```javascript
+router.get('/posts/:post', function(req, res) {
+  res.json(req.post);
+});
+```
+
+Because the post object was retrieved using the middleware function and
+attached to the `req` object, all our request handler has to do is return the
+JSON back to the client.
+
+
+{x: mongoose query docs}
+(optional) Check out the query interface docs for Mongoose
+
+## Upvoting Posts
+
+Now let's implement the route to allow our users to upvote posts.  We'll do
+this by implementing a simple method in our `posts` schema to add one to the
+upvote count then save it.
+
+
+{x: upvote post schema method}
+Add an `upvote()` method to the `Posts` schema in `Posts.js`:
+
+```javascript
+PostSchema.methods.upvote = function(cb) {
+  this.upvotes += 1;
+  this.save(cb);
+};
+```
+
+
+{x: upvote post route}
+Now we create the route in our `index.js`:
+
+```javascript
+router.put('/posts/:post/upvote', function(req, res, next) {
+  req.post.upvote(function(err, post){
+    if (err) { return next(err); }
+
+    res.json(post);
+  });
+});
+```
+
+
+{x: test upvote post}
+To test this route, simply create a new post using the command above then run
+
+```sh
+curl -X PUT http://localhost:3000/posts/<POST ID>/upvote
+```
+
+You should see the post value returned back with the `upvote` property
+incremented.
+
+
+## Finishing Off With Comments
+
+We've now completed all the basic routes for our `posts` object, now all we
+need to do is do the same for `comments`. Many of the same concepts apply
+with a few slight variations.
+
+Firstly, when creating a new comment we need to be sure to include the `post`
+ID. Fortunately, this is already implicitly included in the request. In
+addition to creating and saving the `comment`, we're going to need to attach a
+reference to the new `comment` that refers to our `post` object.
+
+
+{x: create comment route}
+Create `comments` route for a particular `post`:
+
+```javascript
+router.post('/posts/:post/comments', function(req, res, next) {
+  var comment = new Comment(req.body);
+  comment.post = req.post;
+
+  comment.save(function(err, comment){
+    if(err){ return next(err); }
+
+    req.post.comments.push(comment);
+    req.post.save(function(err, post) {
+      if(err){ return next(err); }
+
+      res.json(comment);
+    });
+  });
+});
+```
+
+
+Now, we can also take the exact same `upvote` method from `posts` and apply
+it to `comments`.
+
+{x: comment upvotes}
+Implement the `/posts/:post/comments/:comment/upvote` route yourself. You
+should also implement another `router.param()` middleware function to automatically
+retrieve comments specified by the `:comment` route parameter.
+
+
+Finally, we need to make a slight modification to our `GET /posts/:post` route
+
+{x: populate function}
+Use the `populate()` function to retrieve `comments` along with `posts`:
+
+```javascript
+router.get('/posts/:post', function(req, res, next) {
+  req.post.populate('comments', function(err, post) {
+    if (err) { return next(err); }
+
+    res.json(post);
+  });
+});
+```
+Using the `populate()` method, we can automatically load all the comments
+associated with that particular `post`.
+
+Congratulations! If you made it this far, you should now have a functioning
+backend. There is still a significant amount of additional functionality
+we could add, however, you should now understand some of the basics of
+Node, Express, and Mongoose.
+
+Up next, we'll learn how to use these routes in conjunction with our
+Angular.js frontend to create a web app where people can create `posts`
+and add `comments`.
+
+# Wiring Everything Up
+
+{video: ch-10}
+
+Now that we have our basic backend implemented, we're going to wire up the
+angular app we made in the first part of this tutorial.
+
+## Loading Posts
+
+Our first step is going to be to query our new backend for all `posts` using
+the index route. We do this by adding a new function inside our `posts`
+service.
+
+
+{x: get all posts}
+Implement `getAll()` to retrieve posts in the `posts` service within `angularApp.js`:
+
+```javascript
+  o.getAll = function() {
+    return $http.get('/posts').success(function(data){
+      angular.copy(data, o.posts);
+    });
+  };
+```
+
+{info}
+It's important to use the [angular.copy()](https://docs.angularjs.org/api/ng/function/angular.copy) method to create a deep copy of the returned data. This ensures
+that the `$scope.posts` variable in `MainCtrl` will also be updated, ensuring
+the new values are reflect in our view.
+
+
+{x: inject http}
+Also be sure to inject the `$http` service:
+
+```javascript
+app.factory('posts', ['$http', function($http){
+  ...
+});
+```
+
+In this function we're using the Angular [$http][ng http] service to query our
+`posts` route. The `success()` function allows us to bind function that will be
+executed when the request returns. Because our route will return a list of
+`posts`, all we need to do is copy that list to the client side `posts` object.
+Notice that we're using the [angular.copy()][ng copy] function to do this as it
+will make our UI update properly.
+
+Now we need to call this function at an appropriate time to load the data. We
+do this by adding a property called [resolve][ui resolve] to our `home` state.
+
+
+{x: resolve ui-router}
+Use the `resolve` property of `ui-router` to ensure posts are loaded:
+
+```javascript
+.state('home', {
+  url: '/home',
+  templateUrl: '/home.html',
+  controller: 'MainCtrl',
+  resolve: {
+    postPromise: ['posts', function(posts){
+      return posts.getAll();
+    }]
+  }
+})
+```
+
+By using the `resolve` property in this way, we are ensuring that anytime our
+`home` state is entered, we will automatically query all posts from our
+backend before the state actually finishes loading.
+
+Now, when you fire up the server and go to http://localhost:3000/#/home, you
+should see all the posts that exist in the database.
+
+## Creating New Posts
+
+Up next, we need to enable creating new `posts`. As with loading posts, we're
+going to do this by adding another method to our `posts` service:
+
+
+{x: create new posts service}
+Add a method for creating new posts:
+
+```javascript
+o.create = function(post) {
+  return $http.post('/posts', post).success(function(data){
+    o.posts.push(data);
+  });
+};
+```
+
+
+{x: save post to server}
+Now we can modify the `$scope.addPost()` method in `MainCtrl` to save `posts` to the server:
+
+```javascript
+$scope.addPost = function(){
+  if(!$scope.title || $scope.title === '') { return; }
+  posts.create({
+    title: $scope.title,
+    link: $scope.link,
+  });
+  $scope.title = '';
+  $scope.link = '';
+};
+```
+
+Refresh the page then try adding a new post. You should immediately see it
+displayed and if you refresh the page, the post is still there! We now have
+persistent data.
+
+
+## Upvoting Posts
+
+The last thing we need to wire up on the main page is upvoting posts.
+
+
+{x: frontend upvote service}
+Like in the previous examples, we'll add another method to our service:
+
+```javascript
+o.upvote = function(post) {
+  return $http.put('/posts/' + post._id + '/upvote')
+    .success(function(data){
+      post.upvotes += 1;
+    });
+};
+```
+
+{x: frontend upvote scope}
+And then in our controller, we simply replace `incrementUpvotes()` with this:
+
+```javascript
+$scope.incrementUpvotes = function(post) {
+  posts.upvote(post);
+};
+```
+
+Here we use the `put()` method to upvote a `post`. When the call returns
+successfully, we update our local copy to reflect the changes. Now when you
+refresh the page, upvotes are persisted.
+
+
+## Finishing Off Comments
+
+If you remember back to when we first wrote the template, we were treating the
+index of a `post` in the `posts` array to be its `id` field.  Now that we are
+actually dealing with database entries, we need to make sure that when you
+click on the "Comments" link for a post, the application directs you to the
+proper URL.
+
+
+{x: comments link to correct route}
+Modify the `Comments` link to point to the proper route:
+
+```html
+<a href="#/posts/{{post._id}}">Comments</a>
+```
+
+{info}
+MongoDB uses the `_id` property natively, so it's usually easier to just write
+our application with that in mind rather than have to translate it to an `id`
+field, which some might consider more intuitive.
+
+When you click on the "Comments" link for a post, you should be directed to a
+new Angular URL that might look something like
+`http://localhost:3000/#/posts/53e27c7c363cf85ad8a84723`
+
+What we are going to do is have Angular automatically load the full `post`
+object with `comments` when we enter this state. Like we did with the `home`
+state, we're going to use the `resolve` property in the route to accomplish this.
+
+
+{x: retrieve single post angular}
+First, lets add a simple method in our `posts` service to retrieve a single
+`post` from our server:
+
+```javascript
+o.get = function(id) {
+  return $http.get('/posts/' + id).then(function(res){
+    return res.data;
+  });
+};
+```
+
+Notice that instead of using the `success()` method we have traditionally used,
+we are instead using a [promise](https://docs.angularjs.org/api/ng/service/$q).
+
+
+{x: resolve for posts route}
+Next we add the `resolve` object to our `posts` state:
+
+```javascript
+.state('posts', {
+  url: '/posts/{id}',
+  templateUrl: '/posts.html',
+  controller: 'PostsCtrl',
+  resolve: {
+    post: ['$stateParams', 'posts', function($stateParams, posts) {
+      return posts.get($stateParams.id);
+    }]
+  }
+});
+```
+
+The Angular ui-router detects we are entering the `posts` state and will then
+automatically query the server for the full post object, including `comments`.
+Only after the request has returned will the state finish loading.
+
+To get access to the `post` object we just retrieved in the `PostsCtrl`, instead
+of going through the `posts` service, the specific object will be directly injected
+into our `PostsCtrl`.
+
+
+{x: inject a post}
+We can modify our controller to gain access to it like so:
+
+```javascript
+app.controller('PostsCtrl', [
+'$scope',
+'posts',
+'post',
+function($scope, posts, post){
+  $scope.post = post;
+
+  ...
+});
+```
+
+Notice that we no longer have need to inject `$urlRouterProvider` into our
+controller. We're still going to want to inject `posts` to gain access to the
+methods for manipulating `comments`, however.
+
+When you refresh the page, you should now see the title of the post displayed.
+
+To enable adding `comments`, we can use the same technique we used for adding
+new `posts`.
+
+
+{x: add comment service}
+First add a method to the `posts` service:
+
+```javascript
+o.addComment = function(id, comment) {
+  return $http.post('/posts/' + id + '/comments', comment);
+};
+```
+
+
+{x: add comment scope}
+Then call it from within the existing `addComment()` function:
+
+```javascript
+$scope.addComment = function(){
+  if($scope.body === '') { return; }
+  posts.addComment(post._id, {
+    body: $scope.body,
+    author: 'user',
+  }).success(function(comment) {
+    $scope.post.comments.push(comment);
+  });
+  $scope.body = '';
+};
+```
+
+Now you can add a comment that's persisted to the database.
+
+
+{x: enable comment upvoting service}
+Our final task is to enable the upvoting of comments:
+
+```javascript
+o.upvoteComment = function(post, comment) {
+  return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote')
+    .success(function(data){
+      comment.upvotes += 1;
+    });
+};
+```
+
+In `PostsCtrl`:
+
+```javascript
+$scope.incrementUpvotes = function(comment){
+  posts.upvoteComment(post, comment);
+};
+```
+
+
+# Where To Go Next
+
+Throughout this tutorial we've seen what a basic MEAN app might look like by
+creating a basic Angular application with a persistent Node+Express backend.
+By now, you should hopefully have an understanding of how these technologies
+interact as well as the ability to make modifications and add new features. If
+you're looking to sharpen your skills through practice, here are some
+suggestions on modifications you can add to Flapper News:
+
+- feature downvote: Implement a 'downvoting' feature
+- feature number of comments: Display the number of comments next to each post
+  on the main page
+- feature hide new comments box: use `ng-hide` to hide the 'new comment' and
+  'new post' input box until a user clicks a button to see the field
+- feature specify name when commenting: Create an 'Author' field so people can
+  specify their name when commenting
+
+We sincerely hope this tutorial has been helpful. If you have any questions,
+comments, or feedback, tweet us at [@GoThinkster](https://twitter.com/gothinkster).
+You can also follow me at [@IAmMattGreen](https://twitter.com/IAmMattGreen) for
+more updates about MEAN, AngularJS and more!
