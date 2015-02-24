@@ -1353,7 +1353,7 @@ router.param('post', function(req, res, next, id) {
 });
 ```
 
-In this example we are using mongoose's [query interface](mongoose query)
+In this example we are using mongoose's [query interface][mongoose query]
 which simply provides a more flexible way of interacting with the database.
 
 Now when we define a route URL with `:post` in it, this function will be run
