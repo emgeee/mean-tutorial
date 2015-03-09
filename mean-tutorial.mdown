@@ -1918,6 +1918,9 @@ Install `passport` and `passport-local` via `npm`.
 npm install passport passport-local --save
 ```
 
+{x: create config folder}
+Create a folder `config` in the root of our application.
+
 {x: create config passport}
 Create `config/passport.js` with the following code:
 
@@ -2042,7 +2045,7 @@ router.post('/login', function(req, res, next){
 });
 ```
 
-The `passport.authenticate('local')` middlware uses the `LocalStrategy` we
+The `passport.authenticate('local')` middleware uses the `LocalStrategy` we
 created earlier. We're using a custom callback for the `authenticate`
 middleware so we can return error messages to the client. If authentication
 is successful we want to return a JWT token to the client just like our
@@ -2065,7 +2068,7 @@ var jwt = require('express-jwt');
 ```
 
 {x: create auth middleware}
-Create a middlware for authenticating jwt tokens in `routes/index.js`:
+Create a middleware for authenticating jwt tokens in `routes/index.js`:
 
 ```javascript
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -2395,6 +2398,7 @@ Create two new states for the login and register page:
           $state.go('home');
         }
       }]
+    });
 ```
 
 Here we're specifying an `onEnter` function to our states. This gives us the
@@ -2445,8 +2449,59 @@ If he/she isn't, a Log In and a Register link is shown.
 
 ## Making the Rest of Our Application User-Aware
 
+Since our routes that write to the database now require authentication, let's
+update our `posts` service to send the JWT token to the server on authenticated
+requests.
+
+{x: inject auth to posts}
+First, we'll need to inject the `auth` service to our `posts` service
+
+```javascript
+.factory('posts', ['$http', 'auth', function($http, auth){
+```
+
+Next, we'll need to send up our JWT token as an `Authorization` header. The
+format for this header should be `Authorization: Bearer TOKEN.GOES.HERE`.
+
+{x: add auth header to requests}
+We'll need to pass the following object as the last argument for our `$http`
+calls for the `create`, `upvote`, `addComment`, and `upvoteComment` methods in
+our `posts` service:
+
+```javascript
+  o.create = function(post) {
+    return $http.post('/posts', post, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      o.posts.push(data);
+    });
+  };
+
+  o.upvote = function(post) {
+    return $http.put('/posts/' + post._id + '/upvote', {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      post.upvotes += 1;
+    });
+  };
+
+  o.addComment = function(id, comment) {
+    return $http.post('/posts/' + id + '/comments', comment, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    });
+  };
+
+  o.upvoteComment = function(post, comment) {
+    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote', {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      comment.upvotes += 1;
+    });
+  };
+```
+
 {x: add author to posts}
-We can now display the authors for posts:
+We can now display the authors for posts in the `/home.html` template:
 
 ```html
           {{post.title}}
@@ -2499,7 +2554,7 @@ Finally, hide the comment form for unauthenticated users:
 ```html
     <form ng-submit="addComment()"
       style="margin-top:30px;">
-      style="margin-top:30px;" ng-show="auth.isLoggedIn()">
+      style="margin-top:30px;" ng-show="isLoggedIn()">
       <h3>Add a new comment</h3>
 ```
 
