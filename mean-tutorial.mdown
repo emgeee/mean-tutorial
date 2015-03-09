@@ -1845,8 +1845,6 @@ hash stored, returning a boolean.
 
 ```javascript
 UserSchema.methods.validPassword = function(password) {
-  var self = this;
-
   var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
 
   return this.hash === hash;
@@ -2444,7 +2442,6 @@ Now we can add the markup for our navbar to our application:
       <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
       <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
       <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
-      <li></li>
     </ul>
   </nav>
 ```
