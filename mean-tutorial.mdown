@@ -1783,11 +1783,11 @@ $scope.incrementUpvotes = function(comment){
 # Adding Authentication via Passport
 
 Now that we have a application with a working server and client, let's add in
-the ability to create and authenticate users. We'll be using [passport](http://passportjs.org/)
-for authenticating our users with a username and password, and then generating
-a JWT token which our angular app will send as a header for authenticated
-requests. [This post](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
-has great information about token vs session authentication.
+the ability to create and authenticate users. To do this, we'll be using
+[passport](http://passportjs.org/) for authentications and JWT tokens for
+session management. [This
+post](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
+has some great information about token vs session based authentication.
 
 ## Creating the User model
 
@@ -1807,14 +1807,13 @@ mongoose.model('User', UserSchema);
 ```
 
 Our users will be logging in with a username and password. Since we don't want
-to store our passwords in plaintext, we'll need a field for storing the hash
+to store our passwords in plain text, we'll need a field for storing the hash
 of the password. We'll also be generating and saving a salt whenever we set the
 password.
 
 Now let's implement setting and validating passwords. We'll be using the
-`pbkdf2` function which ships with node's native `crypto` module to hash our
+`pbkdf2()` function which ships with node's native `crypto` module to hash our
 passwords.
-
 
 {x: require crypto user}
 Require the crypto module in our user model.
@@ -1824,8 +1823,8 @@ var crypto = require('crypto');
 ```
 
 {x: create setPassword}
-Create a setPassword method that accepts a password then generates a salt and
-hashes the password.
+Create a `setPassword()` method on the `User` model
+that accepts a password then generates a salt and associated password hash.
 
 ```javascript
 UserSchema.methods.setPassword = function(password){
@@ -1836,12 +1835,12 @@ UserSchema.methods.setPassword = function(password){
 ```
 
 {info}
-The `pbkdf2Sync` function takes four parameters: password, salt, iterations,
+The `pbkdf2Sync()` function takes four parameters: password, salt, iterations,
 and key length. We'll need to make sure the iterations and key length in our
-`setPassword` method match the ones in our `validPassword` method
+`setPassword()` method match the ones in our `validPassword()` method
 
 {x: create validPassword}
-Create a validPassword method that accepts a password and compares it to the
+Create a `validPassword()` method that accepts a password and compares it to the
 hash stored, returning a boolean.
 
 ```javascript
@@ -1855,7 +1854,7 @@ UserSchema.methods.validPassword = function(password) {
 ```
 
 Finally, let's create instance method for generating a JWT token for the
-`user`. We'll be using the `jsonwebtoken` module to help us generate tokens.
+`user`. We'll be using the `jsonwebtoken()` module to help us generate tokens.
 
 {x: npm install jsonwebtoken}
 Install the `jsonwebtoken` module via `npm`.
@@ -1897,7 +1896,7 @@ Both the server and client will have access to the payload. The `exp` value in
 the payload is a Unix timestamp in seconds that will specify when the token
 expires. For this example we set it to 60 days in the future. The second
 argument of `jwt.sign()` is the secret used to sign our tokens. We're
-hardcoding it in this example, but it is **_strongly recommended_** that you
+hard-coding it in this example, but it is **_strongly recommended_** that you
 use an environment variable for referencing the secret and keep it out of your
 codebase.
 
@@ -1905,7 +1904,7 @@ codebase.
 
 Now that we have our methods in place on our `UserSchema` for creating and
 authenticating users, let's install and setup Passport in our application.
-Passport uses stategies for different authentication methods (password, GitHub,
+Passport uses strategies for different authentication methods (password, GitHub,
 Facebook, etc.) that are split out into separate modules. We'll be using the
 `passport-local` strategy to handle username/password authentication. See the
 [official Passport guide](http://passportjs.org/guide/) for more information
@@ -1949,9 +1948,10 @@ passport.use(new LocalStrategy(
 
 {info}
 Here we create a new `LocalStrategy` where we have our logic on how to
-authenticate a user given a username or password, using the `validPassword`
-function that we just created. See the [official passport configuration guide](http://passportjs.org/guide/configure/)
-for more information.
+authenticate a user given a username and password. Note that this function
+calls the `validPassword()` function that we just created. See the [official
+passport configuration guide](http://passportjs.org/guide/configure/) for more
+information.
 
 
 ## Adding Passport to Our Application
@@ -1989,7 +1989,7 @@ app.use(passport.initialize());
 
 ## Creating Authentication Endpoints
 
-Now we're that Passport is setup in our application, we can create a `/login`
+Now that Passport is setup in our application, we can create a `/login`
 endpoint to authenticate our users and return a JWT token.
 
 {x: create register route}
@@ -2023,6 +2023,13 @@ Require `passport` in `routes/index.js`
 var passport = require('passport');
 ```
 
+{x: import user model}
+Import the `User` mongoose model
+
+```
+var User = mongoose.model('User');
+```
+
 {x: create login route}
 Add a `/login` route to `routes/index.js` that authenticates the user and
 returns a token to the client:
@@ -2047,9 +2054,10 @@ router.post('/login', function(req, res, next){
 
 The `passport.authenticate('local')` middleware uses the `LocalStrategy` we
 created earlier. We're using a custom callback for the `authenticate`
-middleware so we can return error messages to the client. If authentication
-is successful we want to return a JWT token to the client just like our
-register route does.
+middleware so we can return error messages to the client. If authentication is
+successful we want to return a JWT token to the client just like our register
+route does.
+
 
 ## Securing Endpoints and Associating Posts and Comments with Users
 
@@ -2075,12 +2083,12 @@ var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 ```
 
-The userPropery option specifies what property on `req` to put our payload from
-our tokens. By default it's set on `user` but we're using `payload` instead to
-avoid any conflicts with passport, although it shouldn't be an issue since we
-shouldn't be using both methods of authentication in the same request. This
-also avoids confusion since the payload isn't an instance of our User model.
- 
+The `userPropery` option specifies which property on `req` to put our payload
+from our tokens. By default it's set on `user` but we're using `payload`
+instead to avoid any conflicts with passport (it shouldn't be an issue since we
+aren't using both methods of authentication in the same request). This also
+avoids confusion since the payload isn't an instance of our User model.
+
 
 {info}
 Make sure to use the same secret as the one in `models/User.js` for generating
@@ -2140,17 +2148,18 @@ Set the author field when creating comments
 router.post('/posts/:post/comments', auth, function(req, res, next) {
   var comment = new Comment(req.body);
   comment.post = req.post;
-  comment.author = req.payload.username; 
+  comment.author = req.payload.username;
 ```
 
 Now that our backend is ready to register and authenticate users, let's update
 the angular side of our application to handle this.
 
+
 ## Creating an Angular Service for Authentication
 
 We'll be using localStorage for persisting data to the client. This gives us
-a much easier interface for persisting data accross sessions without having to
-deal with parsing cookies or handling cookies accross multiple domains. If a
+a much easier interface for persisting data across sessions without having to
+deal with parsing cookies or handling cookies across multiple domains. If a
 JWT token exists in localStorage, we can assume the user is logged in as long
 as the token isn't expired. To log a user out, simply remove the token from
 localStorage. Check out the [localStorage documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage#localStorage)
@@ -2161,8 +2170,7 @@ Let's start out by creating our initial auth factory. We'll need to inject
 `$http` for interfacing with our server, and `$window` for interfacing with
 `localStorage`.
 
-javascript
-```
+```javascript
 .factory('auth', ['$http', '$window', function($http, $window){
    var auth = {};
 
@@ -2176,14 +2184,13 @@ Next, let's create a `saveToken` and `getToken` function in our factory for
 getting and setting our token to `localStorage`
 
 ```javascript
-   var auth = {
-    saveToken: function (token){
-      $window.localStorage['flapper-news-token'] = token;
-    },
-    getToken: function (){
-      return $window.localStorage['flapper-news-token'];
-    }
-  };
+auth.saveToken = function (token){
+  $window.localStorage['flapper-news-token'] = token;
+};
+
+auth.getToken = function (){
+  return $window.localStorage['flapper-news-token'];
+}
 ```
 
 {x: create auth isloggedin}
@@ -2191,23 +2198,23 @@ Now we'll need to add a function `isLoggedIn()` to our `auth` factory to
 return a boolean value for if the user is logged in.
 
 ```javascript
-    isLoggedIn: function(){
-      var token = auth.getToken();
+auth.isLoggedIn = function(){
+  var token = auth.getToken();
 
-      if(token){
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
-        
-        return payload.exp > Date.now() / 1000;
-      } else {
-        return false;
-      }
-    },
+  if(token){
+    var payload = JSON.parse($window.atob(token.split('.')[1]));
+
+    return payload.exp > Date.now() / 1000;
+  } else {
+    return false;
+  }
+};
 ```
 
 If a token exists, we'll need to check the payload to see if the token has
 expired, otherwise we can assume the user is logged out. The payload is the
 middle part of the token between the two `.`s. It's a JSON object that has been
-base64'd. We can get it back to a stringified JSON by using `$window.atob`, and
+base64'd. We can get it back to a stringified JSON by using `$window.atob()`, and
 then back to a javascript object with `JSON.parse`.
 
 {x: create auth currentuser}
@@ -2215,14 +2222,14 @@ Let's create a function `currentUser()` that returns the username of the user th
 logged in.
 
 ```javascript
-    currentUser: function(){
-      if(auth.isLoggedIn()){
-        var token = auth.getToken();
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
+auth.currentUser = function(){
+  if(auth.isLoggedIn()){
+    var token = auth.getToken();
+    var payload = JSON.parse($window.atob(token.split('.')[1]));
 
-        return payload.username;
-      }
-    },
+    return payload.username;
+  }
+};
 ```
 
 Finally, we'll need methods to log in, register, and log users out.
@@ -2232,11 +2239,11 @@ Create a register function that posts a user to our `/register` route and saves
 the token returned.
 
 ```javascript
-    register: function(user){
-      return $http.post('/register', user).success(function(data){
-        auth.saveToken(data.token);
-      });
-    },
+auth.register = function(user){
+  return $http.post('/register', user).success(function(data){
+    auth.saveToken(data.token);
+  });
+};
 ```
 
 {x: create auth login}
@@ -2244,11 +2251,11 @@ Create a login function that posts a user to our `/login` route and saves the
 token returned.
 
 ```javascript
-    logIn: function(user){
-      return $http.post('/login', user).success(function(data){
-        auth.saveToken(data.token);
-      });
-    },
+auth.logIn = function(user){
+  return $http.post('/login', user).success(function(data){
+    auth.saveToken(data.token);
+  });
+};
 ```
 
 {x: create auth log out}
@@ -2256,9 +2263,9 @@ Create a logout function that removes the user's token from localStorage,
 logging the user out.
 
 ```javascript
-    logOut: function(){
-      $window.localStorage.removeItem('flapper-news-token');
-    }
+auth.logOut = function(){
+  $window.localStorage.removeItem('flapper-news-token');
+};
 ```
 
 
@@ -2297,7 +2304,7 @@ function($scope, $state, auth){
 ```
 
 We need to initialize a user on `$scope` for our form. Then, we can create
-a `register` and `logIn` method on `$scope` to call the respective methods on
+a `register` and `logIn()` method on `$scope` to call the respective methods on
 the auth factory. We can then handle any errors and set `$scope.error` for
 displaying error messages later. Finally, if no errors occur, we can send the
 user back to the `home` state using a promise. Now we can go ahead and create
@@ -2308,97 +2315,97 @@ our login and registration templates
 Create the following registration template in `views/index.ejs`:
 
  ```html
-  <script type="text/ng-template" id="/register.html">
-    <div class="page-header">
-      <h1>Flapper News</h1>
+<script type="text/ng-template" id="/register.html">
+  <div class="page-header">
+    <h1>Flapper News</h1>
+  </div>
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+
+  <form ng-submit="register()"
+    style="margin-top:30px;">
+    <h3>Register</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
     </div>
-
-    <div ng-show="error" class="alert alert-danger row">
-      <span>{{ error.message }}</span>
+    <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
     </div>
-
-    <form ng-submit="register()"
-      style="margin-top:30px;">
-      <h3>Register</h3>
-
-      <div class="form-group">
-        <input type="text"
-        class="form-control"
-        placeholder="Username"
-        ng-model="user.username"></input>
-      </div>
-      <div class="form-group">
-        <input type="password"
-        class="form-control"
-        placeholder="Password"
-        ng-model="user.password"></input>
-      </div>
-      <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-  </script>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+</script>
 ```
 
 {x: create login template}
 Create the following login template in `views/index.ejs`:
 
 ```html
-  <script type="text/ng-template" id="/login.html">
-    <div class="page-header">
-      <h1>Flapper News</h1>
+<script type="text/ng-template" id="/login.html">
+  <div class="page-header">
+    <h1>Flapper News</h1>
+  </div>
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+
+  <form ng-submit="logIn()"
+    style="margin-top:30px;">
+    <h3>Log In</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
     </div>
-
-    <div ng-show="error" class="alert alert-danger row">
-      <span>{{ error.message }}</span>
+    <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
     </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+  </form>
+  </script>
+```
 
-    <form ng-submit="logIn()"
-      style="margin-top:30px;">
-      <h3>Log In</h3>
-
-      <div class="form-group">
-        <input type="text"
-        class="form-control"
-        placeholder="Username"
-        ng-model="user.username"></input>
-      </div>
-      <div class="form-group">
-        <input type="password"
-        class="form-control"
-        placeholder="Password"
-        ng-model="user.password"></input>
-      </div>
-      <button type="submit" class="btn btn-primary">Log In</button>
-    </form>
-   </script>
- ```
-
-Finally, let's create the states required to make our login and register pages
-accessible.
+Finally, let's add two new states that make our login and register pages
+accessible:
 
 {x: create login register states}
 Create two new states for the login and register page:
 
 ```javascript
-    .state('login', {
-      url: '/login',
-      templateUrl: '/login.html',
-      controller: 'AuthCtrl',
-      onEnter: ['$state', 'auth', function($state, auth){
-        if(auth.isLoggedIn()){
-          $state.go('home');
-        }
-      }]
-    })
-    .state('register', {
-      url: '/register',
-      templateUrl: '/register.html',
-      controller: 'AuthCtrl',
-      onEnter: ['$state', 'auth', function($state, auth){
-        if(auth.isLoggedIn()){
-          $state.go('home');
-        }
-      }]
-    });
+.state('login', {
+  url: '/login',
+  templateUrl: '/login.html',
+  controller: 'AuthCtrl',
+  onEnter: ['$state', 'auth', function($state, auth){
+    if(auth.isLoggedIn()){
+      $state.go('home');
+    }
+  }]
+})
+.state('register', {
+  url: '/register',
+  templateUrl: '/register.html',
+  controller: 'AuthCtrl',
+  onEnter: ['$state', 'auth', function($state, auth){
+    if(auth.isLoggedIn()){
+      $state.go('home');
+    }
+  }]
+});
 ```
 
 Here we're specifying an `onEnter` function to our states. This gives us the
@@ -2430,11 +2437,11 @@ function($scope, auth){
 Now we can add the markup for our navbar to our application:
 
 ```html
- <body ng-app="flapperNews">
+<body ng-app="flapperNews">
   <nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">
     <ul class="nav navbar-nav">
       <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
-      <li ng-show="isLoggedIn()"><a ng-click="logOut()">Log Out</a></li>
+      <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
       <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
       <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
       <li></li>
@@ -2443,9 +2450,9 @@ Now we can add the markup for our navbar to our application:
 ```
 
 We're using `ng-show` and `ng-hide` along with our `isLoggedIn()` function to
-determine if the user is authenticated. If he/she is, their username is
+determine if the user is authenticated. If they are, their username is
 displayed, along with a log out link which calls our `logOut()` function.
-If he/she isn't, a Log In and a Register link is shown.
+If they aren't, a Log In and a Register link is shown instead.
 
 ## Making the Rest of Our Application User-Aware
 
@@ -2469,52 +2476,44 @@ calls for the `create`, `upvote`, `addComment`, and `upvoteComment` methods in
 our `posts` service:
 
 ```javascript
-  o.create = function(post) {
-    return $http.post('/posts', post, {
-      headers: {Authorization: 'Bearer '+auth.getToken()}
-    }).success(function(data){
-      o.posts.push(data);
-    });
-  };
+o.create = function(post) {
+  return $http.post('/posts', post, {
+    headers: {Authorization: 'Bearer '+auth.getToken()}
+  }).success(function(data){
+    o.posts.push(data);
+  });
+};
 
-  o.upvote = function(post) {
-    return $http.put('/posts/' + post._id + '/upvote', {
-      headers: {Authorization: 'Bearer '+auth.getToken()}
-    }).success(function(data){
-      post.upvotes += 1;
-    });
-  };
+o.upvote = function(post) {
+  return $http.put('/posts/' + post._id + '/upvote', null, {
+    headers: {Authorization: 'Bearer '+auth.getToken()}
+  }).success(function(data){
+    post.upvotes += 1;
+  });
+};
 
-  o.addComment = function(id, comment) {
-    return $http.post('/posts/' + id + '/comments', comment, {
-      headers: {Authorization: 'Bearer '+auth.getToken()}
-    });
-  };
+o.addComment = function(id, comment) {
+  return $http.post('/posts/' + id + '/comments', comment, {
+    headers: {Authorization: 'Bearer '+auth.getToken()}
+  });
+};
 
-  o.upvoteComment = function(post, comment) {
-    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote', {
-      headers: {Authorization: 'Bearer '+auth.getToken()}
-    }).success(function(data){
-      comment.upvotes += 1;
-    });
-  };
+o.upvoteComment = function(post, comment) {
+  return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote', null, {
+    headers: {Authorization: 'Bearer '+auth.getToken()}
+  }).success(function(data){
+    comment.upvotes += 1;
+  });
+};
 ```
 
 {x: add author to posts}
-We can now display the authors for posts in the `/home.html` template:
+We can now display the post authors in the `/home.html` template:
 
 ```html
-          {{post.title}}
-        </span>
-      </span>
-      <span ng-show="post.author">
-        posted by <a>{{post.author}}</a> |
-      </span>
-      <span>
-        <a href="#/posts/{{post._id}}">Comments</a>
-      </span>
-
-
+<span ng-show="post.author">
+  posted by <a>{{post.author}}</a> |
+</span>
 ```
 
 We only want to show the add post and add comment forms if the user is logged
@@ -2532,39 +2531,36 @@ $scope.isLoggedIn = auth.isLoggedIn;
 Now we're able to only show the post form to authenticated users:
 
 ```html
-    <form ng-submit="addPost()"
-      style="margin-top:30px;" ng-show="isLoggedIn()">
-      <h3>Add a new post</h3>
+<form ng-submit="addPost()"
+  ng-show="isLoggedIn()"
+  style="margin-top:30px;">
 ```
 
 {x: show signup msg post}
 And display a message to users who aren't signed in
 
 ```html
-    </form>
-
-    <div ng-hide="isLoggedIn()">
-      <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add a post.</h3>
-    </div>
+<div ng-hide="isLoggedIn()">
+  <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add a post.</h3>
+</div>
 ```
 
 {x: hide comment form}
 Finally, hide the comment form for unauthenticated users:
 
 ```html
-    <form ng-submit="addComment()"
-      style="margin-top:30px;">
-      style="margin-top:30px;" ng-show="isLoggedIn()">
-      <h3>Add a new comment</h3>
+<form ng-submit="addComment()"
+  ng-show="isLoggedIn()"
+  style="margin-top:30px;">
 ```
 
 {x: show auth msg comments}
 And prompt them to log in or sign up instead
 
 ```html
-    <div ng-hide="isLoggedIn()">
-      <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can comment.</h3>
-    </div>
+<div ng-hide="isLoggedIn()">
+  <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can comment.</h3>
+</div>
 ```
 
 We now have an application with authentication!
