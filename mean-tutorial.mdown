@@ -1790,7 +1790,7 @@ post](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs
 has some great information about token vs session based authentication.
 
 ## Creating the User model
-
+{video: create-user-model}
 {x: create mongoose user}
 Start by creating a mongoose model for our Users with the following code in `models/Users.js`:
 
@@ -1900,6 +1900,8 @@ codebase.
 
 ## Setting up Passport
 
+{video: setting-up-passport}
+
 Now that we have our methods in place on our `UserSchema` for creating and
 authenticating users, let's install and setup Passport in our application.
 Passport uses strategies for different authentication methods (password, GitHub,
@@ -1986,6 +1988,8 @@ app.use(passport.initialize());
 ```
 
 ## Creating Authentication Endpoints
+
+{video: create-auth-routes}
 
 Now that Passport is setup in our application, we can create a `/login`
 endpoint to authenticate our users and return a JWT token.
@@ -2155,6 +2159,8 @@ the angular side of our application to handle this.
 
 ## Creating an Angular Service for Authentication
 
+{video: wiring-frontend}
+
 We'll be using localStorage for persisting data to the client. This gives us
 a much easier interface for persisting data across sessions without having to
 deal with parsing cookies or handling cookies across multiple domains. If a
@@ -2268,6 +2274,8 @@ auth.logOut = function(){
 
 
 ## Creating the Login and Register pages
+
+{video: auth-controllers}
 
 Now that our authentication factory is complete we can start using it in our
 application. Let's create a controller for our login and register page.
