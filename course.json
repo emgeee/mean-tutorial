@@ -9,5 +9,9 @@
 
   "author": {
     "github": "emgeee"
-  }
+  },
+  "contributors": [
+    {"github": "apai4"},
+    {"github": "EricSimons"}
+  ]
 }
