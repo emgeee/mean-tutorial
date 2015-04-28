@@ -1720,7 +1720,7 @@ function($scope, posts, post){
 });
 ```
 
-Notice that we no longer have need to inject `$urlRouterProvider` into our
+Notice that we no longer have need to inject `$stateParams` into our
 controller. We're still going to want to inject `posts` to gain access to the
 methods for manipulating `comments`, however.
 
