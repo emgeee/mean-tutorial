@@ -1130,14 +1130,17 @@ Next, we need to tell Node to connect to our local database on start.
 
 
 {x: connect to mongo}
-Connect to our local MongoDB instance by adding the following code into our `app.js` file:
+Connect to our local MongoDB instance by adding the following code into our `app.js` file.:
 
 ```javascript
 var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/news');
-```
 
+...
+var routes = require('./routes/index');
+```
+Make sure to add this before `var routes = require('./routes/index');` otherwise your get a MissingSchemaRrror.
 This will open a connection with the `news` database running on our Mongo
 server. Now we can create our first model.
 
